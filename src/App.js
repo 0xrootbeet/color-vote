@@ -13,6 +13,7 @@ function App() {
     const [voterRedBalance, setVoterRedBalance] = useState("0.0");
     const [totalBlue, setTotalBlue] = useState(0);
     const [totalRed, setTotalRed] = useState(0);
+    const [totalVotes, setTotalVotes] = useState(0);
     const [voterAddress, setVoterAddress] = useState(null);
     const [error, setError] = useState(null);
 
@@ -66,6 +67,7 @@ function App() {
                 setTotalBlue(utils.formatEther(blue));
                 let red = await contract.redTotal();
                 setTotalRed(utils.formatEther(red));
+                setTotalVotes(parseFloat(totalBlue) + parseFloat(totalRed));
                 console.log(
                     `Retrieved totals, ${blue} for blue and ${red} for red`
                 );
@@ -252,19 +254,19 @@ function App() {
     };
 
     useEffect(() => {
+        resetError();
+    }, [isWalletConnected]);
+
+    useEffect(() => {
         voterBalanceHandler();
         totalVoteHandler();
     }, [isWalletConnected, error]);
-
-    useEffect(() => {
-        resetError();
-    }, [isWalletConnected]);
 
     return (
         <div className="App">
             <main>
                 <header className="App-header">
-                    <h2>Vote for the better color.</h2>
+                    <h1>Vote for the better color.</h1>
                 </header>
                 {error !== null && (
                     <div className="error">
@@ -283,18 +285,34 @@ function App() {
                                     flexGrow: totalBlue * Math.pow(10, 3),
                                 }}
                             >
-                                {" "}
+                                <div className="blueText">
+                                    <p>
+                                        {(
+                                            (100 * totalBlue) /
+                                            totalVotes
+                                        ).toFixed(2)}
+                                        %
+                                    </p>
+                                </div>
                             </div>
                             <div
                                 className="red"
                                 style={{ flexGrow: totalRed * Math.pow(10, 3) }}
                             >
-                                {" "}
+                                <div className="redText">
+                                    <p>
+                                        {(
+                                            (100 * totalRed) /
+                                            totalVotes
+                                        ).toFixed(2)}
+                                        %
+                                    </p>
+                                </div>
                             </div>
                         </div>
                         <p>
-                            <code>{totalBlue} ether</code> voted for blue{" "}
-                            <code>{totalRed} ether</code> voted for red
+                            <code>{totalBlue}</code> ether voted for blue and{" "}
+                            <code>{totalRed}</code> ether voted for red
                         </p>
                         {voterBlueBalance !== "0.0" && (
                             <p>
