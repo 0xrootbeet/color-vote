@@ -9,10 +9,10 @@ function App() {
         withdraw: "",
         deposit: "",
     });
-    const [voterBlueBalance, setVoterBlueBalance] = useState(null);
-    const [voterRedBalance, setVoterRedBalance] = useState(null);
-    const [totalBlue, setTotalBlue] = useState(null);
-    const [totalRed, setTotalRed] = useState(null);
+    const [voterBlueBalance, setVoterBlueBalance] = useState("0.0");
+    const [voterRedBalance, setVoterRedBalance] = useState("0.0");
+    const [totalBlue, setTotalBlue] = useState(0);
+    const [totalRed, setTotalRed] = useState(0);
     const [voterAddress, setVoterAddress] = useState(null);
     const [error, setError] = useState(null);
 
@@ -247,25 +247,86 @@ function App() {
         }));
     };
 
+    const resetError = (event) => {
+        setError(null);
+    };
+
     useEffect(() => {
         voterBalanceHandler();
+        totalVoteHandler();
+    }, [isWalletConnected, error]);
+
+    useEffect(() => {
+        resetError();
     }, [isWalletConnected]);
 
     return (
         <div className="App">
-            <header className="App-header">
-                <p>
-                    Edit <code>src/App.js</code> and save to reload.
-                </p>
-                <a
-                    className="App-link"
-                    href="https://reactjs.org"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    Learn React
-                </a>
-            </header>
+            <main>
+                <header className="App-header">
+                    <h2>Vote for the better color.</h2>
+                </header>
+                {error !== null && (
+                    <div className="error">
+                        <h4>{error}</h4>
+                    </div>
+                )}
+                {!isWalletConnected && (
+                    <h3>👇Connect your MetaMask wallet to begin 👇</h3>
+                )}
+                {isWalletConnected && (
+                    <article>
+                        <div className="faceOff">
+                            <div
+                                className="blue"
+                                style={{
+                                    flexGrow: totalBlue * Math.pow(10, 3),
+                                }}
+                            >
+                                {" "}
+                            </div>
+                            <div
+                                className="red"
+                                style={{ flexGrow: totalRed * Math.pow(10, 3) }}
+                            >
+                                {" "}
+                            </div>
+                        </div>
+                        <p>
+                            <code>{totalBlue} ether</code> voted for blue{" "}
+                            <code>{totalRed} ether</code> voted for red
+                        </p>
+                        {voterBlueBalance !== "0.0" && (
+                            <p>
+                                You have voted <code>{voterBlueBalance}</code>{" "}
+                                ether towards blue.
+                            </p>
+                        )}
+                        {voterRedBalance !== "0.0" && (
+                            <p>
+                                You have voted <code>{voterRedBalance}</code>{" "}
+                                ether towards red.
+                            </p>
+                        )}
+                        {voterBlueBalance === "0.0" &&
+                            voterRedBalance === "0.0" && (
+                                <p>You have not voted.</p>
+                            )}
+                    </article>
+                )}
+                <footer>
+                    <button
+                        className="btn-connect"
+                        onClick={checkIfWalletIsConnected}
+                    >
+                        {" "}
+                        {isWalletConnected
+                            ? "Disconnect Wallet"
+                            : "Connect Wallet"}{" "}
+                    </button>{" "}
+                    <h2 className="footerAddress">{voterAddress}</h2>
+                </footer>
+            </main>
         </div>
     );
 }
