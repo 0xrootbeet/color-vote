@@ -2,17 +2,6 @@
     text-align: center;
 }
 
-.App-logo {
-    height: 40vmin;
-    pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-    .App-logo {
-        animation: App-logo-spin infinite 20s linear;
-    }
-}
-
 .App-header {
     background-color: #590cbd;
     min-width: 100vw;
@@ -46,6 +35,7 @@ footer {
     z-index: -1;
     color: #1f1e20;
     font-size: calc(4vw);
+    pointer-events: none;
 }
 
 main {
@@ -112,19 +102,6 @@ article {
     margin-right: 4vw;
 }
 
-.App-link {
-    color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg);
-    }
-}
-
 .error {
     background-color: #b31414;
     min-width: 100vw;
@@ -136,4 +113,48 @@ article {
     color: white;
     position: fixed;
     bottom: 5vh;
+}
+
+.btn {
+    font-size: calc(10px + 1.5vmin);
+    background-color: #590cbd;
+    color: white;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 3vmin;
+    transition: 100ms;
+}
+
+.btn:hover {
+    background-color: #752ad8;
+}
+
+.btn:active {
+    background-color: white;
+    color: #590cbd;
+}
+
+.btn-connect {
+    background-color: #1f1e20;
+}
+
+.btn-connect:hover {
+    background-color: #3d3c3f;
+}
+
+.btn-connect:active {
+    background-color: white;
+    color: #1f1e20;
+}
+
+#voting-panel {
+    background-color: #313033 !important;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.ReactModal__Overlay {
+    background-color: rgba(0, 0, 0, 0.705) !important;
 }

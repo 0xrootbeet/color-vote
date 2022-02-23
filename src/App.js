@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { ethers, utils } from "ethers";
 import abi from "./contracts/ColorVote.json";
+import Modal from "react-modal";
 import "./App.css";
 
 function App() {
@@ -16,6 +17,9 @@ function App() {
     const [totalVotes, setTotalVotes] = useState(0);
     const [voterAddress, setVoterAddress] = useState(null);
     const [error, setError] = useState(null);
+    const [modalIsOpen, setIsOpen] = useState(false);
+
+    Modal.setAppElement("#root");
 
     const contractAddress = "0x05864A9131c99Ada7DC8b779acB6b97a53106167";
     const contractABI = abi.abi;
@@ -119,7 +123,13 @@ function App() {
     };
 
     const openVotePanel = async () => {
-        console.log("not opening the voting panel");
+        console.log("opening the voting panel");
+        setIsOpen(true);
+    };
+
+    const closeVotePanel = async () => {
+        console.log("closing the voting panel");
+        setIsOpen(false);
     };
 
     const voteHandlerBlue = async (event) => {
@@ -304,7 +314,7 @@ function App() {
                                             (100 * totalBlue) /
                                             totalVotes
                                         ).toFixed(2)}
-                                        %
+                                        %{" "}
                                     </p>
                                 </div>
                             </div>
@@ -319,14 +329,14 @@ function App() {
                                             (100 * totalRed) /
                                             totalVotes
                                         ).toFixed(2)}
-                                        %
+                                        %{" "}
                                     </p>
                                 </div>
                             </div>
                         </div>
                         <p>
-                            <code>{totalBlue}</code> ether voted for blue and{" "}
-                            <code>{totalRed}</code> ether voted for red
+                            <code>{totalBlue}Ξ</code> voted for blue and{" "}
+                            <code>{totalRed}Ξ</code> voted for red
                         </p>
                         {voterBlueBalance !== "0.0" && (
                             <p>
@@ -344,14 +354,47 @@ function App() {
                             voterRedBalance === "0.0" && (
                                 <p>You have not voted.</p>
                             )}
-                        <button className="btn-vote" onClick={openVotePanel}>
+                        <button
+                            className="btn btn-vote"
+                            onClick={openVotePanel}
+                        >
                             Adjust Your Vote
                         </button>
                     </article>
                 )}
+                <Modal
+                    isOpen={modalIsOpen}
+                    onRequestClose={closeVotePanel}
+                    contentLabel="Voting Panel"
+                    id="voting-panel"
+                >
+                    <h1>Adjust Your Vote</h1>
+                    <div className="voting-panel">
+                        <label>
+                            Blue Vote
+                            <input
+                                type={"text"}
+                                defaultValue={voterBlueBalance}
+                            ></input>
+                        </label>
+                        <label>
+                            Red Vote
+                            <input
+                                type={"text"}
+                                defaultValue={voterRedBalance}
+                            ></input>
+                        </label>
+                    </div>
+                    <button
+                        className="btn btn-connect btn-close"
+                        onClick={closeVotePanel}
+                    >
+                        Close
+                    </button>
+                </Modal>
                 <footer>
                     <button
-                        className="btn-connect"
+                        className="btn btn-connect"
                         onClick={checkIfWalletIsConnected}
                     >
                         {" "}
