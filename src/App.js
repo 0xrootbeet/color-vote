@@ -23,21 +23,29 @@ function App() {
     const checkIfWalletIsConnected = async () => {
         try {
             if (window.ethereum) {
-                const accounts = await window.ethereum.request({
-                    method: "eth_requestAccounts",
-                });
-                const account = accounts[0];
-                console.log("account: ", account);
-                console.log("voterAddr: ", voterAddress);
-                console.log("connected: ", isWalletConnected);
-                if (account === voterAddress && isWalletConnected === true) {
-                    setVoterAddress("");
-                    setIsWalletConnected(false);
-                    console.log("Account Disconnected");
+                if (window.ethereum.chainId === "0x4") {
+                    const accounts = await window.ethereum.request({
+                        method: "eth_requestAccounts",
+                    });
+                    const account = accounts[0];
+                    console.log("account: ", account);
+                    console.log("voterAddr: ", voterAddress);
+                    console.log("connected: ", isWalletConnected);
+                    if (
+                        account === voterAddress &&
+                        isWalletConnected === true
+                    ) {
+                        setVoterAddress("");
+                        setIsWalletConnected(false);
+                        console.log("Account Disconnected");
+                    } else {
+                        setVoterAddress(account);
+                        setIsWalletConnected(true);
+                        console.log("Account Connected: ", account);
+                    }
                 } else {
-                    setVoterAddress(account);
-                    setIsWalletConnected(true);
-                    console.log("Account Connected: ", account);
+                    setError("Please connect to the Rinkeby Testnet");
+                    console.log("Wrong network");
                 }
             } else {
                 setError(
@@ -108,6 +116,10 @@ function App() {
         } catch (error) {
             console.error(error);
         }
+    };
+
+    const openVotePanel = async () => {
+        console.log("not opening the voting panel");
     };
 
     const voteHandlerBlue = async (event) => {
@@ -287,6 +299,7 @@ function App() {
                             >
                                 <div className="blueText">
                                     <p>
+                                        Blue{" "}
                                         {(
                                             (100 * totalBlue) /
                                             totalVotes
@@ -301,6 +314,7 @@ function App() {
                             >
                                 <div className="redText">
                                     <p>
+                                        Red{" "}
                                         {(
                                             (100 * totalRed) /
                                             totalVotes
@@ -330,6 +344,9 @@ function App() {
                             voterRedBalance === "0.0" && (
                                 <p>You have not voted.</p>
                             )}
+                        <button className="btn-vote" onClick={openVotePanel}>
+                            Adjust Your Vote
+                        </button>
                     </article>
                 )}
                 <footer>
