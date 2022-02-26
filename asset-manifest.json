@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/color-vote/static/css/main.1e2909ad.css",
+    "main.js": "/color-vote/static/js/main.5ca1c522.js",
+    "static/js/787.fab61407.chunk.js": "/color-vote/static/js/787.fab61407.chunk.js",
+    "index.html": "/color-vote/index.html",
+    "main.1e2909ad.css.map": "/color-vote/static/css/main.1e2909ad.css.map",
+    "main.5ca1c522.js.map": "/color-vote/static/js/main.5ca1c522.js.map",
+    "787.fab61407.chunk.js.map": "/color-vote/static/js/787.fab61407.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.1e2909ad.css",
+    "static/js/main.5ca1c522.js"
+  ]
+}
