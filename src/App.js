@@ -7,8 +7,8 @@ import "./App.css";
 function App() {
     const [isWalletConnected, setIsWalletConnected] = useState(false);
     const [inputValue, setInputValue] = useState({
-        withdraw: "",
-        deposit: "",
+        blueVote: "",
+        redVote: "",
     });
     const [voterBlueBalance, setVoterBlueBalance] = useState("0.0");
     const [voterRedBalance, setVoterRedBalance] = useState("0.0");
@@ -53,7 +53,7 @@ function App() {
                 }
             } else {
                 setError(
-                    "Please install a Metamask Web3 wallet to use our bank."
+                    "Please install a Metamask Web3 wallet to use this dapp."
                 );
                 console.log("No Metamask detected");
             }
@@ -85,7 +85,7 @@ function App() {
                 );
             } else {
                 console.log("Ethereum object not found, install Metamask.");
-                setError("Please install a MetaMask wallet to use our bank.");
+                setError("Please install a MetaMask wallet to use this dapp.");
             }
         } catch (error) {
             console.error(error);
@@ -115,7 +115,7 @@ function App() {
                 );
             } else {
                 console.log("Ethereum object not found, install Metamask.");
-                setError("Please install a MetaMask wallet to use our bank.");
+                setError("Please install a MetaMask wallet to use this dapp.");
             }
         } catch (error) {
             console.error(error);
@@ -135,63 +135,91 @@ function App() {
     const voteHandlerBlue = async (event) => {
         try {
             event.preventDefault();
-            if (window.ethereum) {
-                const provider = new ethers.providers.Web3Provider(
-                    window.ethereum
-                );
-                const signer = provider.getSigner();
-                const contract = new ethers.Contract(
-                    contractAddress,
-                    contractABI,
-                    signer
-                );
+            if (inputValue.blueVote !== "") {
+                // The value has been edited
+                console.log("There is a value");
 
-                const txn = await contract.voteBlue({
-                    value: ethers.utils.parseEther(inputValue.deposit),
-                });
-                console.log("Voting blue...");
-                await txn.wait();
-                console.log("Voted blue!", txn.hash);
+                if (inputValue.blueVote > voterBlueBalance) {
+                    // Add difference
+                    console.log("The input is " + inputValue.blueVote);
+                    console.log("Current vote is " + voterBlueBalance);
+                    const diff = inputValue.blueVote - voterBlueBalance;
+                    console.log("Adding difference of " + diff);
 
-                voterBalanceHandler();
-            } else {
-                console.log("Ethereum object not found, install Metamask.");
-                setError("Please install a MetaMask wallet to use our bank.");
-            }
-        } catch (error) {
-            console.error(error);
-        }
-    };
+                    // Actually add it
+                    if (window.ethereum) {
+                        const provider = new ethers.providers.Web3Provider(
+                            window.ethereum
+                        );
+                        const signer = provider.getSigner();
+                        const contract = new ethers.Contract(
+                            contractAddress,
+                            contractABI,
+                            signer
+                        );
 
-    const unVoteHandlerBlue = async (event) => {
-        try {
-            event.preventDefault();
-            if (window.ethereum) {
-                const provider = new ethers.providers.Web3Provider(
-                    window.ethereum
-                );
-                const signer = provider.getSigner();
-                const contract = new ethers.Contract(
-                    contractAddress,
-                    contractABI,
-                    signer
-                );
+                        const txn = await contract.voteBlue({
+                            value: ethers.utils.parseEther(diff.toString()),
+                        });
+                        console.log("Voting blue...");
+                        await txn.wait();
+                        console.log("Voted blue!", txn.hash);
 
-                let myAddress = await signer.getAddress();
-                console.log("provider signer...", myAddress);
+                        voterBalanceHandler();
+                    } else {
+                        console.log(
+                            "Submitting a vote of " + diff + " for blue"
+                        );
+                        console.log(
+                            "Ethereum object not found, install Metamask."
+                        );
+                        setError(
+                            "Please install a MetaMask wallet to use this dapp."
+                        );
+                    }
+                } else if (inputValue.blueVote < voterBlueBalance) {
+                    // Subtract difference
+                    console.log("The input is " + inputValue.blueVote);
+                    console.log("Current vote is " + voterBlueBalance);
+                    const diff = voterBlueBalance - inputValue.blueVote;
+                    console.log("Subtracting difference of " + diff);
 
-                const txn = await contract.withdrawVote(
-                    ethers.utils.parseEther(inputValue.withdraw),
-                    "blue"
-                );
-                console.log("Withdrawing blue vote...");
-                await txn.wait();
-                console.log("UnVoted for Blue!", txn.hash);
+                    // Actually subtract it
+                    if (window.ethereum) {
+                        const provider = new ethers.providers.Web3Provider(
+                            window.ethereum
+                        );
+                        const signer = provider.getSigner();
+                        const contract = new ethers.Contract(
+                            contractAddress,
+                            contractABI,
+                            signer
+                        );
 
-                voterBalanceHandler();
-            } else {
-                console.log("Ethereum object not found, install Metamask.");
-                setError("Please install a MetaMask wallet to use our bank.");
+                        let myAddress = await signer.getAddress();
+                        console.log("provider signer...", myAddress);
+
+                        const txn = await contract.withdrawVote(
+                            ethers.utils.parseEther(diff.toString()),
+                            "blue"
+                        );
+                        console.log("Withdrawing blue vote...");
+                        await txn.wait();
+                        console.log("UnVoted for Blue!", txn.hash);
+
+                        voterBalanceHandler();
+                    } else {
+                        console.log(
+                            "Withdrawing a vote of " + diff + " for blue"
+                        );
+                        console.log(
+                            "Ethereum object not found, install Metamask."
+                        );
+                        setError(
+                            "Please install a MetaMask wallet to use this dapp."
+                        );
+                    }
+                }
             }
         } catch (error) {
             console.error(error);
@@ -201,63 +229,91 @@ function App() {
     const voteHandlerRed = async (event) => {
         try {
             event.preventDefault();
-            if (window.ethereum) {
-                const provider = new ethers.providers.Web3Provider(
-                    window.ethereum
-                );
-                const signer = provider.getSigner();
-                const contract = new ethers.Contract(
-                    contractAddress,
-                    contractABI,
-                    signer
-                );
+            if (inputValue.redVote !== "") {
+                // The value has been edited
+                console.log("There is a value");
 
-                const txn = await contract.voteRed({
-                    value: ethers.utils.parseEther(inputValue.deposit),
-                });
-                console.log("Voting red...");
-                await txn.wait();
-                console.log("Voted red!", txn.hash);
+                if (inputValue.redVote > voterRedBalance) {
+                    // Add difference
+                    console.log("The input is " + inputValue.redVote);
+                    console.log("Current vote is " + voterRedBalance);
+                    const diff = inputValue.redVote - voterRedBalance;
+                    console.log("Adding difference of " + diff);
 
-                voterBalanceHandler();
-            } else {
-                console.log("Ethereum object not found, install Metamask.");
-                setError("Please install a MetaMask wallet to use our bank.");
-            }
-        } catch (error) {
-            console.error(error);
-        }
-    };
+                    // Actually add it
+                    if (window.ethereum) {
+                        const provider = new ethers.providers.Web3Provider(
+                            window.ethereum
+                        );
+                        const signer = provider.getSigner();
+                        const contract = new ethers.Contract(
+                            contractAddress,
+                            contractABI,
+                            signer
+                        );
 
-    const unVoteHandlerRed = async (event) => {
-        try {
-            event.preventDefault();
-            if (window.ethereum) {
-                const provider = new ethers.providers.Web3Provider(
-                    window.ethereum
-                );
-                const signer = provider.getSigner();
-                const contract = new ethers.Contract(
-                    contractAddress,
-                    contractABI,
-                    signer
-                );
+                        const txn = await contract.voteRed({
+                            value: ethers.utils.parseEther(diff.toString()),
+                        });
+                        console.log("Voting red...");
+                        await txn.wait();
+                        console.log("Voted Red!", txn.hash);
 
-                let myAddress = await signer.getAddress();
-                console.log("provider signer...", myAddress);
+                        voterBalanceHandler();
+                    } else {
+                        console.log(
+                            "Submitting a vote of " + diff + " for red"
+                        );
+                        console.log(
+                            "Ethereum object not found, install Metamask."
+                        );
+                        setError(
+                            "Please install a MetaMask wallet to use this dapp."
+                        );
+                    }
+                } else if (inputValue.redVote < voterRedBalance) {
+                    // Subtract difference
+                    console.log("The input is " + inputValue.redVote);
+                    console.log("Current vote is " + voterRedBalance);
+                    const diff = voterRedBalance - inputValue.redVote;
+                    console.log("Subtracting difference of " + diff);
 
-                const txn = await contract.withdrawVote(
-                    ethers.utils.parseEther(inputValue.withdraw),
-                    "red"
-                );
-                console.log("Withdrawing red vote...");
-                await txn.wait();
-                console.log("UnVoted for Red!", txn.hash);
+                    // Actually subtract it
+                    if (window.ethereum) {
+                        const provider = new ethers.providers.Web3Provider(
+                            window.ethereum
+                        );
+                        const signer = provider.getSigner();
+                        const contract = new ethers.Contract(
+                            contractAddress,
+                            contractABI,
+                            signer
+                        );
 
-                voterBalanceHandler();
-            } else {
-                console.log("Ethereum object not found, install Metamask.");
-                setError("Please install a MetaMask wallet to use our bank.");
+                        let myAddress = await signer.getAddress();
+                        console.log("provider signer...", myAddress);
+
+                        const txn = await contract.withdrawVote(
+                            ethers.utils.parseEther(diff.toString()),
+                            "red"
+                        );
+                        console.log("Withdrawing red vote...");
+                        await txn.wait();
+                        console.log("UnVoted for Red!", txn.hash);
+
+                        voterBalanceHandler();
+                    } else {
+                        console.log(
+                            "Withdrawing a vote of " + diff + " for red"
+                        );
+                        console.log(
+                            "Ethereum object not found, install Metamask."
+                        );
+                        setError(
+                            "Please install a MetaMask wallet to use this dapp."
+                        );
+                    }
+                }
             }
         } catch (error) {
             console.error(error);
@@ -267,7 +323,7 @@ function App() {
     const handleInputChange = (event) => {
         setInputValue((prevFormData) => ({
             ...prevFormData,
-            [event.target.name]: event.target.value,
+            [event.target.name]: parseFloat(event.target.value),
         }));
     };
 
@@ -340,14 +396,14 @@ function App() {
                         </p>
                         {voterBlueBalance !== "0.0" && (
                             <p>
-                                You have voted <code>{voterBlueBalance}</code>{" "}
-                                ether towards blue.
+                                You have voted <code>{voterBlueBalance}Ξ</code>{" "}
+                                towards blue.
                             </p>
                         )}
                         {voterRedBalance !== "0.0" && (
                             <p>
-                                You have voted <code>{voterRedBalance}</code>{" "}
-                                ether towards red.
+                                You have voted <code>{voterRedBalance}Ξ</code>{" "}
+                                towards red.
                             </p>
                         )}
                         {voterBlueBalance === "0.0" &&
@@ -371,19 +427,46 @@ function App() {
                     <h1>Adjust Your Vote</h1>
                     <div className="voting-panel">
                         <label>
-                            Blue Vote
+                            Blue Vote:
                             <input
                                 type={"text"}
+                                className="input"
+                                onChange={handleInputChange}
+                                id="blueVoteInput"
+                                name="blueVote"
+                                placeholder="0.0"
                                 defaultValue={voterBlueBalance}
                             ></input>
+                            Ether
                         </label>
+                        <br />
+                        <button
+                            className="btn btn-vote btn-blue"
+                            onClick={voteHandlerBlue}
+                        >
+                            Submit Blue Vote
+                        </button>
+                        <br />
                         <label>
-                            Red Vote
+                            Red Vote:
                             <input
                                 type={"text"}
+                                className="input"
+                                onChange={handleInputChange}
+                                id="redVoteInput"
+                                name="redVote"
+                                placeholder="0.0"
                                 defaultValue={voterRedBalance}
                             ></input>
+                            Ether
                         </label>
+                        <br />
+                        <button
+                            className="btn btn-vote btn-red"
+                            onClick={voteHandlerRed}
+                        >
+                            Submit Red Vote
+                        </button>
                     </div>
                     <button
                         className="btn btn-connect btn-close"
