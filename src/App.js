@@ -237,7 +237,9 @@ function App() {
                     // Add difference
                     console.log("The input is " + inputValue.redVote);
                     console.log("Current vote is " + voterRedBalance);
-                    const diff = inputValue.redVote - voterRedBalance;
+                    const diff = (inputValue.redVote - voterRedBalance).toFixed(
+                        18
+                    );
                     console.log("Adding difference of " + diff);
 
                     // Actually add it
@@ -275,7 +277,9 @@ function App() {
                     // Subtract difference
                     console.log("The input is " + inputValue.redVote);
                     console.log("Current vote is " + voterRedBalance);
-                    const diff = voterRedBalance - inputValue.redVote;
+                    const diff = (voterRedBalance - inputValue.redVote).toFixed(
+                        18
+                    );
                     console.log("Subtracting difference of " + diff);
 
                     // Actually subtract it
@@ -323,7 +327,7 @@ function App() {
     const handleInputChange = (event) => {
         setInputValue((prevFormData) => ({
             ...prevFormData,
-            [event.target.name]: parseFloat(event.target.value),
+            [event.target.name]: parseFloat(event.target.value).toFixed(18),
         }));
     };
 
@@ -391,18 +395,26 @@ function App() {
                             </div>
                         </div>
                         <p>
-                            <code>{totalBlue}Ξ</code> voted for blue and{" "}
-                            <code>{totalRed}Ξ</code> voted for red
+                            <code>{parseFloat(totalBlue).toFixed(3)}Ξ</code>{" "}
+                            voted for blue and{" "}
+                            <code>{parseFloat(totalRed).toFixed(3)}Ξ</code>{" "}
+                            voted for red
                         </p>
                         {voterBlueBalance !== "0.0" && (
                             <p>
-                                You have voted <code>{voterBlueBalance}Ξ</code>{" "}
+                                You have voted{" "}
+                                <code>
+                                    {parseFloat(voterBlueBalance).toFixed(3)}Ξ
+                                </code>{" "}
                                 towards blue.
                             </p>
                         )}
                         {voterRedBalance !== "0.0" && (
                             <p>
-                                You have voted <code>{voterRedBalance}Ξ</code>{" "}
+                                You have voted{" "}
+                                <code>
+                                    {parseFloat(voterRedBalance).toFixed(3)}Ξ
+                                </code>{" "}
                                 towards red.
                             </p>
                         )}
